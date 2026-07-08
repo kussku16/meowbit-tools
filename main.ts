@@ -36,7 +36,7 @@ controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
 })
 controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
     if (menuOpen == false) {
-        menu()
+        menu2()
     } else {
         desktop()
     }
