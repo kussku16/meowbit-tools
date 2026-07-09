@@ -934,6 +934,8 @@ controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
         cursorPosition = 0
     }
 })
+let seconds = 0
+let minutes = 0
 let _return: TextSprite = null
 let menu: TextSprite = null
 let dice: TextSprite = null
@@ -1135,7 +1137,9 @@ cursorPosition = 0
 game.onUpdateInterval(1000, function () {
     if (cursorPosition == 4 && optionOpen == true && (timerValue > 0 && timeRunning == true)) {
         timerValue += -1
-        timerDisplay.setText("" + timerValue + "s")
+        minutes = Math.floor(timerValue / 60)
+        seconds = timerValue % 60
+        timerDisplay.setText("" + minutes + ":" + seconds)
     }
 })
 game.onUpdateInterval(500, function () {
