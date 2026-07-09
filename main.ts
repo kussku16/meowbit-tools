@@ -26,9 +26,12 @@ controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
     if (menuOpen == true) {
         desktop()
     } else if (optionOpen == true) {
-        if (cursorPosition == 3 && timewatchRunning == false && elapsedTenths > 0) {
+        if (cursorPosition == 3 && timeRunning == false && elapsedTenths > 0) {
             elapsedTenths = 0
             stopwatchDisplay.setText("" + elapsedTenths + "s")
+        } else if (cursorPosition == 4 && timeRunning == false && timerValue > 0) {
+            timerValue = 0
+            timerDisplay.setText("" + timerValue + "s")
         } else {
             menu2()
         }
@@ -563,7 +566,7 @@ controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
         stopWatch.setPosition(50, 20)
         optionOpen = true
         menuOpen = false
-        timewatchRunning = false
+        timeRunning = false
     } else if (cursorPosition == 4 && optionOpen == false) {
         scene.setBackgroundImage(img`
             ................................................................................................................................................................
@@ -691,8 +694,15 @@ controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
         sprites.destroyAllSpritesOfKind(SpriteKind.Text)
         timer = textsprite.create("Timer", 0, 8)
         timer.setPosition(50, 20)
+        timerValue = 0
+        timerDisplay = textsprite.create("" + timerValue + "s")
+        pressRight = textsprite.create("Press right +5 sec")
+        pressRight.setPosition(60, 40)
+        pressLeft = textsprite.create("Press left -5 sec")
+        pressLeft.setPosition(57, 50)
         optionOpen = true
         menuOpen = false
+        timeRunning = false
     } else if (cursorPosition == 5 && optionOpen == false) {
         scene.setBackgroundImage(img`
             ................................................................................................................................................................
@@ -823,10 +833,16 @@ controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
         optionOpen = true
         menuOpen = false
     } else if (cursorPosition == 3 && optionOpen == true) {
-        if (timewatchRunning == false) {
-            timewatchRunning = true
+        if (timeRunning == false) {
+            timeRunning = true
         } else {
-            timewatchRunning = false
+            timeRunning = false
+        }
+    } else if (cursorPosition == 4 && optionOpen == true) {
+        if (timeRunning == false) {
+            timeRunning = true
+        } else {
+            timeRunning = false
         }
     }
 })
@@ -858,6 +874,10 @@ function menu2 () {
     optionOpen = false
     cursorPosition = 0
 }
+controller.left.onEvent(ControllerButtonEvent.Pressed, function () {
+    timerValue += -5
+    timerDisplay.setText("" + timerValue + "s")
+})
 function desktop () {
     scene.setBackgroundColor(4)
     sprites.destroyAllSpritesOfKind(SpriteKind.Text)
@@ -886,6 +906,10 @@ function desktop () {
     sprites.destroy(cursorSprite)
     sprites.destroy(_return)
 }
+controller.right.onEvent(ControllerButtonEvent.Pressed, function () {
+    timerValue += 5
+    timerDisplay.setText("" + timerValue + "s")
+})
 controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
     if (cursorPosition == 0) {
         cursorSprite.setPosition(9, 37)
@@ -913,6 +937,8 @@ controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
 let _return: TextSprite = null
 let menu: TextSprite = null
 let dice: TextSprite = null
+let pressLeft: TextSprite = null
+let pressRight: TextSprite = null
 let timer: TextSprite = null
 let stopWatch: TextSprite = null
 let accelerationZ: TextSprite = null
@@ -923,9 +949,11 @@ let light2 = 0
 let lightSprite: TextSprite = null
 let temperature = 0
 let temperatureSprite: TextSprite = null
+let timerDisplay: TextSprite = null
 let stopwatchDisplay: TextSprite = null
+let timerValue = 0
 let elapsedTenths = 0
-let timewatchRunning = false
+let timeRunning = false
 let optionOpen = false
 let cursorSprite: TextSprite = null
 let cursorPosition = 0
@@ -1104,6 +1132,12 @@ greeting.setBounceOnWall(true)
 greeting.setScale(1.5, ScaleAnchor.Middle)
 menuOpen = false
 cursorPosition = 0
+game.onUpdateInterval(1000, function () {
+    if (cursorPosition == 4 && optionOpen == true && (timerValue > 0 && timeRunning == true)) {
+        timerValue += -1
+        timerDisplay.setText("" + timerValue + "s")
+    }
+})
 game.onUpdateInterval(500, function () {
     temperature = controller.temperature(ControllerTemperatureUnit.Celsius)
     light2 = controller.lightLevel()
@@ -1116,10 +1150,8 @@ game.onUpdateInterval(500, function () {
     }
 })
 game.onUpdateInterval(100, function () {
-    if (cursorPosition == 3 && optionOpen == true && timewatchRunning == true) {
+    if (cursorPosition == 3 && optionOpen == true && timeRunning == true) {
         elapsedTenths += 0.1
         stopwatchDisplay.setText("" + elapsedTenths + "s")
-    } else {
-    	
     }
 })
