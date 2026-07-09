@@ -875,8 +875,16 @@ function menu2 () {
     cursorPosition = 0
 }
 controller.left.onEvent(ControllerButtonEvent.Pressed, function () {
-    timerValue += -5
-    timerDisplay.setText("" + timerValue + "s")
+    if (seconds > 5) {
+        timerValue += -5
+        minutes = Math.floor(timerValue / 60)
+        seconds = timerValue % 60
+        if (seconds >= 10) {
+            timerDisplay.setText("" + minutes + ":" + seconds)
+        } else if (seconds < 10) {
+            timerDisplay.setText("" + minutes + ":0" + seconds)
+        }
+    }
 })
 function desktop () {
     scene.setBackgroundColor(4)
@@ -908,7 +916,13 @@ function desktop () {
 }
 controller.right.onEvent(ControllerButtonEvent.Pressed, function () {
     timerValue += 5
-    timerDisplay.setText("" + timerValue + "s")
+    minutes = Math.floor(timerValue / 60)
+    seconds = timerValue % 60
+    if (seconds >= 10) {
+        timerDisplay.setText("" + minutes + ":" + seconds)
+    } else if (timerValue < 10) {
+        timerDisplay.setText("" + minutes + ":0" + seconds)
+    }
 })
 controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
     if (cursorPosition == 0) {
@@ -934,8 +948,9 @@ controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
         cursorPosition = 0
     }
 })
-let seconds = 0
+let soundPlayed = false
 let minutes = 0
+let seconds = 0
 let _return: TextSprite = null
 let menu: TextSprite = null
 let dice: TextSprite = null
@@ -1139,7 +1154,17 @@ game.onUpdateInterval(1000, function () {
         timerValue += -1
         minutes = Math.floor(timerValue / 60)
         seconds = timerValue % 60
-        timerDisplay.setText("" + minutes + ":" + seconds)
+        soundPlayed = false
+        if (seconds >= 10) {
+            timerDisplay.setText("" + minutes + ":" + seconds)
+        } else if (seconds < 10) {
+            timerDisplay.setText("" + minutes + ":0" + seconds)
+        }
+    } else if (cursorPosition == 4 && optionOpen == true && (timerValue == 0 && timeRunning == true)) {
+        if (soundPlayed == false) {
+            music.play(music.melodyPlayable(music.baDing), music.PlaybackMode.UntilDone)
+            soundPlayed = true
+        }
     }
 })
 game.onUpdateInterval(500, function () {
